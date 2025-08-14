@@ -8,6 +8,7 @@ modelFile = "res10_300x300_ssd_iter_140000.caffemodel"
 configFile = "deploy.prototxt"
 net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
 
+# Face detection function
 def detect_faces(frame):
     if frame is None or not isinstance(frame, np.ndarray):
         return None
@@ -24,6 +25,7 @@ def detect_faces(frame):
             cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
     return frame
 
+# Streamlit interface
 st.set_page_config(page_title="Face Detection App", page_icon="📷")
 st.title("📷 Real-Time & Image Face Detection")
 
