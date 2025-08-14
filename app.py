@@ -3,8 +3,8 @@ import numpy as np
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 
-st.set_page_config(page_title="Live Face Detection", page_icon="📷")
-st.title("📷 Live Face Detection Online (Video Only)")
+st.set_page_config(page_title="Face Detection", page_icon="📷")
+st.title("📷 Live Face Detection + Upload Image")
 
 # Load face detection model
 net = cv2.dnn.readNetFromCaffe("deploy.prototxt", "res10_300x300_ssd_iter_140000.caffemodel")
@@ -33,7 +33,7 @@ if uploaded_file is not None:
     st.image(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), channels="RGB", caption="Detected Faces")
     if st.button("💾 Save Uploaded Image"):
         cv2.imwrite("saved_uploaded_image.jpg", image)
-        st.success("✅ Image saved as saved_uploaded_image.jpg")
+        st.success("✅ Uploaded image saved as saved_uploaded_image.jpg")
 
 # --- Live Camera Section ---
 st.markdown("### Or use your camera live")
@@ -42,16 +42,13 @@ class FaceDetector(VideoTransformerBase):
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
         img = detect_faces(img)
-        self.last_frame = img
+        self.last_frame = img  # حفظ آخر frame
         return img
 
 webrtc_ctx = webrtc_streamer(
     key="live_camera",
     video_transformer_factory=FaceDetector,
-    media_stream_constraints={
-        "video": True,
-        "audio": False 
-    },
+    media_stream_constraints={"video": True, "audio": False},  # الصوت اتعطل
 )
 
 # Save frame from live camera
@@ -60,4 +57,4 @@ if webrtc_ctx.video_transformer:
         frame = webrtc_ctx.video_transformer.last_frame
         if frame is not None:
             cv2.imwrite("saved_face_image.jpg", frame)
-            st.success("✅ Image saved as saved_face_image.jpg")
+            st.success("✅ Current frame saved as saved_face_image.jpg")
