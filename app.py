@@ -4,13 +4,16 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, WebRtcMode
 
 st.set_page_config(page_title="Live Face Detection", page_icon="📷")
-st.title("📷 Live Face Detection with Start/Stop + Upload Image")
+st.title("📷 Live Face Detection with Upload Image + Save Frame")
 
 # Load face detection model
 net = cv2.dnn.readNetFromCaffe("deploy.prototxt", "res10_300x300_ssd_iter_140000.caffemodel")
 
 # --- Video Transformer ---
 class FaceDetector(VideoTransformerBase):
+    def _init_(self):
+        self.frame = None
+
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
         h, w = img.shape[:2]
@@ -23,30 +26,32 @@ class FaceDetector(VideoTransformerBase):
                 box = detections[0,0,i,3:7] * [w,h,w,h]
                 (startX, startY, endX, endY) = box.astype("int")
                 cv2.rectangle(img, (startX,startY), (endX,endY), (0,255,0), 2)
+        self.frame = img
         return img
 
-# --- Start / Stop Camera ---
+# --- Start Camera with single button ---
 if "camera_running" not in st.session_state:
     st.session_state.camera_running = False
+    st.session_state.webrtc_ctx = None
 
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("▶ Start Camera"):
-        st.session_state.camera_running = True
-with col2:
-    if st.button("⏹ Stop Camera"):
-        st.session_state.camera_running = False
+if st.button("▶ Start Camera"):
+    st.session_state.camera_running = not st.session_state.camera_running
+    if not st.session_state.camera_running and st.session_state.webrtc_ctx:
+        st.session_state.webrtc_ctx.stop()
 
 if st.session_state.camera_running:
-    webrtc_ctx = webrtc_streamer(
+    st.session_state.webrtc_ctx = webrtc_streamer(
         key="live_face",
         mode=WebRtcMode.SENDRECV,
         video_transformer_factory=FaceDetector,
-        media_stream_constraints={"video": True, "audio": False},  # Disable audio
+        media_stream_constraints={"video": True, "audio": False},
+        rtc_configuration={
+            "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+        }
     )
 
-    if webrtc_ctx.video_transformer and st.button("💾 Save Current Frame"):
-        frame = webrtc_ctx.video_transformer.frame
+    if st.session_state.webrtc_ctx.video_transformer and st.button("💾 Save Current Frame"):
+        frame = st.session_state.webrtc_ctx.video_transformer.frame
         if frame is not None:
             cv2.imwrite("saved_live_frame.jpg", frame)
             st.success("✅ Live frame saved as saved_live_frame.jpg")
