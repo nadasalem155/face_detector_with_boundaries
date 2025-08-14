@@ -84,7 +84,7 @@ def handle_image(pil_img: Image.Image, source: str, conf: float, max_width: int)
                        file_name="faces_detected.png", mime="image/png")
 
 # --------- UI ---------
-st.title("👤 Face Detection (OpenCV DNN)")
+st.title("👤 Face Detection ")
 st.caption("Upload an image or take a snapshot. Works on Streamlit Cloud (snapshot only, not live video).")
 
 with st.sidebar:
