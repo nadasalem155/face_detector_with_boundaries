@@ -51,7 +51,7 @@ if uploaded_file is not None:
     image = detect_faces(image)
     st.image(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), channels="RGB", caption="Detected Faces")
 
-# Camera section
+# Camera section using browser
 if "camera_running" not in st.session_state:
     st.session_state.camera_running = False
 
@@ -63,18 +63,16 @@ with col2:
     if st.button("🛑 Stop Camera"):
         st.session_state.camera_running = False
 
-if st.session_state.camera_running:
-    with st.spinner("Loading camera..."):
-        time.sleep(0.5)  # small delay to show spinner
-        cap = cv2.VideoCapture(0)
-        stframe = st.empty()
-        while st.session_state.camera_running:
-            ret, frame = cap.read()
-            if not ret:
-                st.error("Failed to access camera")
-                break
-            frame = detect_faces(frame)
-            stframe.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels="RGB")
-            if not st.session_state.camera_running:
-                break
-        cap.release()
+frame_placeholder = st.empty()
+
+while st.session_state.camera_running:
+    # capture frame from browser
+    camera_image = st.camera_input("Camera feed")
+    if camera_image is not None:
+        file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
+        frame = cv2.imdecode(file_bytes, 1)
+        frame = detect_faces(frame)
+        frame_placeholder.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels="RGB")
+    else:
+        st.warning("Waiting for camera input...")
+    time.sleep(0.1)
