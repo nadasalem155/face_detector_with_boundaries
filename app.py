@@ -1,63 +1,73 @@
+import io
 import cv2
 import numpy as np
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageOps
 
-# Load face detection model
-modelFile = "res10_300x300_ssd_iter_140000.caffemodel"
-configFile = "deploy.prototxt"
-net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
+st.set_page_config(page_title="Face Detector DNN", page_icon="👤")
 
-# Face detection function
-def detect_faces(frame):
-    if frame is None or not isinstance(frame, np.ndarray):
-        return None
-    (h, w) = frame.shape[:2]
-    blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
+# ---- Load the DNN model directly from local files ----
+proto_path = "deploy.prototxt"
+model_path = "res10_300x300_ssd_iter_140000.caffemodel"
+
+net = cv2.dnn.readNetFromCaffe(proto_path, model_path)
+
+# ---- Helper functions ----
+def pil_to_bgr(pil_img):
+    pil_img = ImageOps.exif_transpose(pil_img.convert("RGB"))
+    return np.array(pil_img)[:, :, ::-1].copy()  # RGB -> BGR
+
+def bgr_to_pil(bgr_img):
+    return Image.fromarray(bgr_img[:, :, ::-1])  # BGR -> RGB
+
+def detect_faces(image_bgr, conf_threshold=0.6):
+    (h, w) = image_bgr.shape[:2]
+    blob = cv2.dnn.blobFromImage(cv2.resize(image_bgr, (300, 300)), 1.0,
                                  (300, 300), (104.0, 177.0, 123.0))
     net.setInput(blob)
     detections = net.forward()
-    for i in range(detections.shape[2]):
+    boxes = []
+    for i in range(0, detections.shape[2]):
         confidence = detections[0, 0, i, 2]
-        if confidence > 0.5:
+        if confidence > conf_threshold:
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (startX, startY, endX, endY) = box.astype("int")
-            cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
-    return frame
+            boxes.append((startX, startY, endX, endY))
+    return boxes
 
-# Streamlit interface
-st.set_page_config(page_title="Face Detection App", page_icon="📷")
-st.title("📷 Real-Time & Image Face Detection")
+def draw_boxes(image_bgr, boxes):
+    for (x1, y1, x2, y2) in boxes:
+        cv2.rectangle(image_bgr, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    return image_bgr
 
-# Upload image
-uploaded_file = st.file_uploader("🖼 Upload an image", type=["jpg", "jpeg", "png"])
-if uploaded_file:
-    try:
-        pil_image = Image.open(uploaded_file)
-        image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-        frame_with_faces = detect_faces(image)
-        if frame_with_faces is not None:
-            st.image(cv2.cvtColor(frame_with_faces, cv2.COLOR_BGR2RGB),
-                     caption="Detected Faces", use_container_width=True)
-        else:
-            st.error("⚠ No faces detected in the image!")
-    except:
-        st.error("⚠ Unable to read the uploaded image!")
+# ---- Streamlit UI ----
+st.title("👤 Face Detection using OpenCV DNN")
+st.write("Upload a photo or take a snapshot to detect faces.")
 
-# Camera input
-st.markdown("---")
-st.subheader("📷 Capture an image with camera")
-photo = st.camera_input("Click the camera to take a photo")
+confidence = st.slider("Confidence Threshold", 0.1, 0.99, 0.6, 0.01)
 
-if photo:
-    try:
-        pil_image = Image.open(photo)
-        image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-        frame_with_faces = detect_faces(image)
-        if frame_with_faces is not None:
-            st.image(cv2.cvtColor(frame_with_faces, cv2.COLOR_BGR2RGB),
-                     caption="Detected Faces", use_container_width=True)
-        else:
-            st.error("⚠ No faces detected in the photo!")
-    except:
-        st.error("⚠ Unable to read the captured photo!")
+tab1, tab2 = st.tabs(["📤 Upload Image", "📷 Take Photo"])
+
+with tab1:
+    uploaded = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
+    if uploaded:
+        img = Image.open(uploaded)
+        bgr = pil_to_bgr(img)
+        faces = detect_faces(bgr, conf_threshold=confidence)
+        out_img = draw_boxes(bgr.copy(), faces)
+        st.image(bgr_to_pil(out_img), caption=f"Detected {len(faces)} face(s)")
+        buf = io.BytesIO()
+        bgr_to_pil(out_img).save(buf, format="PNG")
+        st.download_button("Download Result", buf.getvalue(), "faces.png", "image/png")
+
+with tab2:
+    cam_img = st.camera_input("Take a photo")
+    if cam_img:
+        img = Image.open(cam_img)
+        bgr = pil_to_bgr(img)
+        faces = detect_faces(bgr, conf_threshold=confidence)
+        out_img = draw_boxes(bgr.copy(), faces)
+        st.image(bgr_to_pil(out_img), caption=f"Detected {len(faces)} face(s)")
+        buf = io.BytesIO()
+        bgr_to_pil(out_img).save(buf, format="PNG")
+        st.download_button("Download Result", buf.getvalue(), "faces.png", "image/png")
