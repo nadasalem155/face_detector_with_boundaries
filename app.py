@@ -42,16 +42,16 @@ class FaceDetector(VideoTransformerBase):
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
         img = detect_faces(img)
-        self.last_frame = img  # حفظ آخر frame
+        self.last_frame = img  
         return img
 
 webrtc_ctx = webrtc_streamer(
     key="live_camera",
     video_transformer_factory=FaceDetector,
-    media_stream_constraints={"video": True, "audio": False},  # الصوت اتعطل
+    media_stream_constraints={"video": True, "audio": False},  
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},  # STUN server
 )
 
-# Save frame from live camera
 if webrtc_ctx.video_transformer:
     if st.button("💾 Save Current Frame"):
         frame = webrtc_ctx.video_transformer.last_frame
