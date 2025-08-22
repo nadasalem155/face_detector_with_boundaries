@@ -28,7 +28,7 @@ You can also run the project in **Jupyter Notebook**:
   - `res10_300x300_ssd_iter_140000.caffemodel`  
 - Run the cells to detect faces from your webcam.  
 
-🔗 **Notebook link:** [webcam_face_detection.ipynb](link-to-your-notebook)
+🔗 **Notebook link:** [webcam_face_detection.ipynb](face_detector.ipynb)
 
 ---
 
@@ -36,7 +36,6 @@ You can also run the project in **Jupyter Notebook**:
 
 ### Streamlit Web App
 
-```bash
 streamlit run app.py
 
 Open the URL displayed in the terminal.
@@ -56,9 +55,9 @@ Press Q to quit the webcam window.
 
 ---
 
-📦 Requirements
+ Requirements
 
-Python 3.8+ 🐍
+Python 3.8+ 
 
 OpenCV (opencv-python)
 
