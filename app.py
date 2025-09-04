@@ -88,9 +88,17 @@ st.title("👤 Face Detection ")
 st.caption("Upload an image or take a snapshot. Works on Streamlit Cloud (snapshot only, not live video).")
 
 with st.sidebar:
-    st.header("Settings")
-    conf = st.slider("Confidence threshold", 0.10, 0.99, 0.60, 0.01)
-    max_width = st.slider("Display width (px)", 400, 1200, 800, 50)
+    st.header("⚙️ Settings")
+    conf = st.slider(
+        "Confidence threshold 🎯", 
+        0.10, 0.99, 0.60, 0.01,
+        help="🎯 Minimum confidence score required to consider a detection as a face.\n\n- Higher = fewer false positives but might miss some faces.\n- Lower = more faces detected but risk of false positives."
+    )
+    max_width = st.slider(
+        "Display width (px) 🖼️", 
+        400, 1200, 800, 50,
+        help="🖼️ Controls how wide the result image is displayed on the screen.\n\n⚠️ Does not affect detection, only visualization."
+    )
     st.markdown("---")
     st.info("- Use *Camera input* for a snapshot (no live feed on cloud).\n- Ensure good lighting and a frontal face.")
 
