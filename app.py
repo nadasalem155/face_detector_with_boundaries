@@ -96,7 +96,7 @@ with st.sidebar:
     )
     max_width = st.slider(
         "Display width (px) 🖼️", 
-        400, 1200, 800, 50,
+        400, 1200, 400, 50,  # default set to 400
         help="🖼️ Controls how wide the result image is displayed on the screen.\n\n⚠️ Does not affect detection, only visualization."
     )
     st.markdown("---")
