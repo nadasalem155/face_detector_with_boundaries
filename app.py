@@ -69,14 +69,14 @@ def draw_boxes(bgr_img: np.ndarray, boxes):
         cv2.rectangle(out, (x1, y1), (x2, y2), (0, 255, 0), 2)
     return out
 
-def handle_image(pil_img: Image.Image, conf: float, max_width: int):
+def handle_image(pil_img: Image.Image, source: str, conf: float, max_width: int):
     bgr = pil_to_bgr(pil_img)
     boxes = detect_faces(bgr, conf_threshold=conf)
     out = draw_boxes(bgr, boxes)
     out_pil = bgr_to_pil(out)
 
-    # عرض صورة واحدة فقط - المعدلة
-    st.image(out_pil, use_container_width=False, width=max_width)
+    st.subheader(f"Result — {source}")
+    st.image(out_pil, caption=f"Detected {len(boxes)} face(s)", use_container_width=False, width=max_width)
 
     buf = io.BytesIO()
     out_pil.save(buf, format="PNG")
@@ -100,12 +100,12 @@ with tab1:
     uploaded = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png", "webp"])
     if uploaded is not None:
         img = Image.open(uploaded)
-        handle_image(img, conf, max_width)
+        handle_image(img, "Uploaded image", conf, max_width)
 
 with tab2:
     snap = st.camera_input("Take a photo")
     if snap is not None:
         img = Image.open(snap)
-        handle_image(img, conf, max_width)
+        handle_image(img, "Camera snapshot", conf, max_width)
 
 st.markdown("---")
