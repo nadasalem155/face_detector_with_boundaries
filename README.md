@@ -1,6 +1,8 @@
 # 👤 Face Detector with Boundaries
 
-A Python program that uses **OpenCV** to detect faces from the webcam, draw **green boundaries** around them 🟩, **and display the confidence score (%) above each detected face**.  
+ A Python program that uses **OpenCV** and a **pre-trained Deep Learning model (ResNet10 SSD)** 
+to detect faces from the webcam, draw **green boundaries** 🟩 around them, 
+and display the **confidence score (%)** above each detected face.
 Press **Q** to close the camera.
 
 🌐 **Live Demo on Streamlit:** [face-detector-with-boundaries](https://face-detector-with-boundaries.streamlit.app/)
