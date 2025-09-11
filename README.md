@@ -42,7 +42,9 @@ You can also run the project in **Jupyter Notebook**:
 
 Run locally with:
 
+```bash
 streamlit run app.py
+
 Open the URL displayed in the terminal.
 
 📤 Upload an image → App detects faces and shows number of faces detected
@@ -53,18 +55,28 @@ Open the URL displayed in the terminal.
 
 💾 Download results as a PNG file
 
+
+
+---
+
 Local Webcam Version
+
 Run the script:
 
 python webcam_face_detection.py
 
--A window will open with your webcam feed
+A window will open with your webcam feed
 
--Green boxes will appear around detected faces
+Green boxes will appear around detected faces
 
--Press Q to quit the webcam window
+Press Q to quit the webcam window
 
-#📦 Requirements
+
+
+---
+
+📦 Requirements
+
 Python 3.8+
 
 OpenCV (opencv-python)
@@ -75,13 +87,18 @@ Pillow (Pillow)
 
 Numpy (numpy)
 
+
 Install dependencies with:
 
 pip install -r requirements.txt
 
-#⚠️ Notes
--Works on Streamlit Cloud only for snapshots, not live video ☁️
 
--Ensure good lighting and a frontal face for better detection 💡
+---
 
--Use the confidence slider to tweak detection sensitivity 🎚️
+⚠️ Notes
+
+Works on Streamlit Cloud only for snapshots, not live video ☁️
+
+Ensure good lighting and a frontal face for better detection 💡
+
+Use the confidence slider to tweak detection sensitivity 🎚️
