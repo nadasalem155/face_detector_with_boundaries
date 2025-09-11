@@ -38,11 +38,11 @@ You can also run the project in **Jupyter Notebook**:
 
 ## 🚀 Usage
 
-### Streamlit Web App
+### 1️⃣ Streamlit Web App
 
 Run locally with:
 
-1-streamlit run app.py
+streamlit run app.py
 
 Open the URL displayed in the terminal.
 
@@ -58,7 +58,7 @@ Open the URL displayed in the terminal.
 
 ---
 
-2-Local Webcam Version
+### 2️⃣ Local Webcam Version
 
 Run the script:
 
@@ -74,7 +74,7 @@ Press Q to quit the webcam window
 
 ---
 
-## 📦 Requirements
+📦 Requirements
 
 Python 3.8+
 
@@ -94,10 +94,10 @@ pip install -r requirements.txt
 
 ---
 
-## ⚠️ Notes
+⚠️ Notes
 
 Works on Streamlit Cloud only for snapshots, not live video ☁️
 
 Ensure good lighting and a frontal face for better detection 💡
 
-Use the confidence slider to tweak detection sensitivity 
+Use the confidence slider to tweak detection sensitivity 🎚️
