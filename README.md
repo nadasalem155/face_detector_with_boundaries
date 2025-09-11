@@ -42,8 +42,7 @@ You can also run the project in **Jupyter Notebook**:
 
 Run locally with:
 
-```bash
-streamlit run app.py
+1-streamlit run app.py
 
 Open the URL displayed in the terminal.
 
@@ -59,7 +58,7 @@ Open the URL displayed in the terminal.
 
 ---
 
-Local Webcam Version
+2-Local Webcam Version
 
 Run the script:
 
