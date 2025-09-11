@@ -75,7 +75,7 @@ Press Q to quit the webcam window
 
 ---
 
-📦 Requirements
+## 📦 Requirements
 
 Python 3.8+
 
@@ -95,10 +95,10 @@ pip install -r requirements.txt
 
 ---
 
-⚠️ Notes
+## ⚠️ Notes
 
 Works on Streamlit Cloud only for snapshots, not live video ☁️
 
 Ensure good lighting and a frontal face for better detection 💡
 
-Use the confidence slider to tweak detection sensitivity 🎚️
+Use the confidence slider to tweak detection sensitivity 
