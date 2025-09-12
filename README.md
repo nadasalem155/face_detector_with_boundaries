@@ -1,4 +1,4 @@
-# 👤 Face Detector with Boundaries
+# 👤 Face Detection with Boundaries
 
  A Python program that uses **OpenCV** and a **pre-trained Deep Learning model (ResNet10 SSD)** 
 to detect faces from the webcam, draw **green boundaries** 🟩 around them, 
